@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Metrix.API/Metrix.API.csproj" />
+  <Project Path="Metrix.Application/Metrix.Application.csproj" />
+  <Project Path="Metrix.Domain/Metrix.Domain.csproj" />
+  <Project Path="Metrix.Infrastructure/Metrix.Infrastructure.csproj" />
+</Solution>

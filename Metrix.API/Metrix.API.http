@@ -1,0 +1,6 @@
+@Metrix.API_HostAddress = http://localhost:5091
+
+GET {{Metrix.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
