@@ -12,7 +12,7 @@ public class SecurityService : ISecurityService
         _repository = repository;
     }
 
-    public async Task<Guid> RegisterSecurityAsync(RegisterSecurityRequestDto request)
+    public async Task<string> RegisterSecurityAsync(RegisterSecurityRequestDto request)
     {
         var existing = await _repository.GetByEmailAsync(request.Email);
 
@@ -21,7 +21,7 @@ public class SecurityService : ISecurityService
 
         var user = new SecurityUser
         {
-            Id = Guid.NewGuid(),
+           
             Name = request.Name,
             Email = request.Email,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password)
@@ -29,6 +29,7 @@ public class SecurityService : ISecurityService
 
         await _repository.AddAsync(user);
 
-        return user.Id;
+        return "Security user created successfully";
+        //return user.Id;
     }
 }

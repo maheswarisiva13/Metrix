@@ -4,7 +4,7 @@ namespace Metrix.Domain.Entities;
 
 public class Invitation
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
 
     public string VisitorName { get; set; } = string.Empty;
 
@@ -18,7 +18,7 @@ public class Invitation
 
     public InvitationStatus Status { get; set; } = InvitationStatus.Pending;
 
-    public Guid CreatedByHRId { get; set; }
+    public int CreatedByHRId { get; set; }
 
     public HRUser? CreatedByHR { get; set; }
 }

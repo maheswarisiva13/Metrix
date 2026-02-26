@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Metrix.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260214085457_SeedUpdate")]
-    partial class SeedUpdate
+    [Migration("20260221130700_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,17 +27,21 @@ namespace Metrix.Infrastructure.Migrations
 
             modelBuilder.Entity("Metrix.Domain.Entities.HRUser", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -45,24 +49,31 @@ namespace Metrix.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.ToTable("HRUsers");
                 });
 
             modelBuilder.Entity("Metrix.Domain.Entities.Invitation", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
 
-                    b.Property<Guid>("CreatedByHRId")
-                        .HasColumnType("uuid");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CreatedByHRId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Purpose")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Token")
                         .IsRequired()
@@ -73,32 +84,41 @@ namespace Metrix.Infrastructure.Migrations
 
                     b.Property<string>("VisitorEmail")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("VisitorName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedByHRId");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
 
                     b.ToTable("Invitations");
                 });
 
             modelBuilder.Entity("Metrix.Domain.Entities.SecurityUser", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -106,14 +126,19 @@ namespace Metrix.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.ToTable("SecurityUsers");
                 });
 
             modelBuilder.Entity("Metrix.Domain.Entities.VisitLog", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("EntryTime")
                         .HasColumnType("timestamp with time zone");
@@ -121,11 +146,11 @@ namespace Metrix.Infrastructure.Migrations
                     b.Property<DateTime?>("ExitTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("VerifiedBySecurityId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("VerifiedBySecurityId")
+                        .HasColumnType("integer");
 
-                    b.Property<Guid>("VisitorId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("VisitorId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -136,37 +161,44 @@ namespace Metrix.Infrastructure.Migrations
 
             modelBuilder.Entity("Metrix.Domain.Entities.Visitor", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("ApprovedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("ApprovedByHRId")
-                        .HasColumnType("uuid");
+                    b.Property<int?>("ApprovedByHRId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Company")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
 
                     b.Property<string>("IDProofNumber")
                         .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("IDProofType")
+                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("IDProofType")
+                    b.Property<int>("InvitationId")
                         .HasColumnType("integer");
-
-                    b.Property<Guid>("InvitationId")
-                        .HasColumnType("uuid");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
 
                     b.Property<string>("Phone")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("PhotoPath")
                         .IsRequired()
@@ -175,12 +207,14 @@ namespace Metrix.Infrastructure.Migrations
                     b.Property<string>("RegistrationId")
                         .HasColumnType("text");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("InvitationId");
+                    b.HasIndex("InvitationId")
+                        .IsUnique();
 
                     b.ToTable("Visitors");
                 });
@@ -190,7 +224,7 @@ namespace Metrix.Infrastructure.Migrations
                     b.HasOne("Metrix.Domain.Entities.HRUser", "CreatedByHR")
                         .WithMany()
                         .HasForeignKey("CreatedByHRId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("CreatedByHR");
@@ -210,8 +244,8 @@ namespace Metrix.Infrastructure.Migrations
             modelBuilder.Entity("Metrix.Domain.Entities.Visitor", b =>
                 {
                     b.HasOne("Metrix.Domain.Entities.Invitation", "Invitation")
-                        .WithMany()
-                        .HasForeignKey("InvitationId")
+                        .WithOne()
+                        .HasForeignKey("Metrix.Domain.Entities.Visitor", "InvitationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

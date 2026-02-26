@@ -23,13 +23,13 @@ public class InvitationService : IInvitationService
         string visitorEmail,
         string purpose,
         DateTime visitDate,
-        Guid createdByHrId)
+        int createdByHrId)
     {
         var token = Guid.NewGuid().ToString();
 
         var invitation = new Invitation
         {
-            Id = Guid.NewGuid(),
+          
             VisitorName = visitorName,
             VisitorEmail = visitorEmail,
             Purpose = purpose,

@@ -12,6 +12,7 @@ using Metrix.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using static Metrix.API.Constants.ApiRoutes;
 
 namespace Metrix.API;
 
@@ -26,6 +27,13 @@ public static class ProgramHelper
             options.UseNpgsql(
                 configuration.GetConnectionString("DefaultConnection")));
 
+        // ================= AUTHORIZATION (FIXED) =================
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("AdminOnly", policy =>
+                policy.RequireRole("Admin"));
+        });
+
         // ================= EMAIL SETTINGS =================
         services.Configure<EmailSettings>(
             configuration.GetSection("EmailSettings"));
@@ -34,6 +42,7 @@ public static class ProgramHelper
         services.AddScoped<IHRRepository, HRRepository>();
         services.AddScoped<ISecurityUserRepository, SecurityUserRepository>();
         services.AddScoped<IInvitationRepository, InvitationRepository>();
+        services.AddScoped<IAdminRepository, AdminRepository>();
 
         // ================= SERVICES =================
         services.AddScoped<IAuthService, AuthService>();
@@ -42,11 +51,13 @@ public static class ProgramHelper
         services.AddScoped<ISecurityService, SecurityService>();
         services.AddScoped<IInvitationService, InvitationService>();
         services.AddScoped<IEmailService, SmtpEmailService>();
+        services.AddScoped<IAdminService, AdminService>();
 
         // ================= HANDLERS =================
         services.AddScoped<RegisterHrHandler>();
         services.AddScoped<RegisterSecurityHandler>();
         services.AddScoped<SendInvitationHandler>();
+        services.AddScoped<CreateAdminHandler>();
 
         // ================= JWT AUTHENTICATION =================
         var jwtKey = configuration["JwtSettings:Key"];
@@ -71,7 +82,14 @@ public static class ProgramHelper
                     };
             });
 
-        services.AddAuthorization();
+        // ================= CORS =================
+        services.AddCors(options =>
+        {
+            options.AddPolicy("AllowFrontend",
+                policy => policy.WithOrigins("http://localhost:5174")
+                                .AllowAnyMethod()
+                                .AllowAnyHeader());
+        });
 
         // ================= SWAGGER =================
         services.AddEndpointsApiExplorer();
@@ -89,8 +107,9 @@ public static class ProgramHelper
         }
 
         app.UseHttpsRedirection();
+        app.UseCors("AllowFrontend");
 
-        app.UseAuthentication();
+        app.UseAuthentication();   // MUST come before Authorization
         app.UseAuthorization();
 
         // ================= ENDPOINTS =================
@@ -98,6 +117,7 @@ public static class ProgramHelper
         app.MapHrManagementEndpoints();
         app.MapSecurityManagementEndpoints();
         app.MapInvitationEndpoints();
+        app.MapAdminEndpoint();
 
         return app;
     }

@@ -12,8 +12,7 @@ public static class SecurityManagementEndpoints
             async (RegisterSecurityHandler handler,
                    RegisterSecurityRequestDto request)
                 => await handler.RegisterSecurity(request))
-            .WithName("CreateSecurityUser")
-            .WithTags("Security Management")
-            .AllowAnonymous(); // secure later
+            .RequireAuthorization("AdminOnly")
+            .WithTags("Admin");
     }
 }

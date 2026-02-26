@@ -2,5 +2,5 @@
 
 public interface ISecurityService
 {
-    Task<Guid> RegisterSecurityAsync(RegisterSecurityRequestDto request);
+    Task<string> RegisterSecurityAsync(RegisterSecurityRequestDto request);
 }

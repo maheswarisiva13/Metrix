@@ -2,14 +2,14 @@
 
 public class VisitLog
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
 
-    public Guid VisitorId { get; set; }
+    public int VisitorId { get; set; }
     public Visitor? Visitor { get; set; }
 
     public DateTime EntryTime { get; set; }
 
     public DateTime? ExitTime { get; set; }
 
-    public Guid VerifiedBySecurityId { get; set; }
+    public int VerifiedBySecurityId { get; set; }
 }

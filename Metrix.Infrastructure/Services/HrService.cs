@@ -27,7 +27,7 @@ public class HrService : IHrService
         // 3️⃣ Create entity
         var user = new HRUser
         {
-            Id = Guid.NewGuid(),
+           
             Name = request.Name,
             Email = request.Email,
             PasswordHash = passwordHash
