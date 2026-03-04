@@ -11,31 +11,13 @@ public static class InvitationEndpoints
     {
         // POST - Send invitation
         app.MapPost(ApiRoutes.Invitation.Send,
-            async (SendInvitationHandler handler,
-                   SendInvitationDto request)
-                => await handler.Handle(request))
-            .WithName("SendInvitation")
-            .WithTags("Invitation")
-            .AllowAnonymous();
+    async (SendInvitationHandler handler, SendInvitationDto request)
+        => await handler.Handle(request))
+    .WithName("SendInvitation")
+    .WithTags("Invitation")
+    .RequireAuthorization();
 
 
-        // GET - Registration page (Temporary test page)
-        app.MapGet("/api/invitations/register", (string token) =>
-        {
-            var html = $@"
-                <html>
-                    <body>
-                        <h2>Registration Page</h2>
-                        <p>Your token: {token}</p>
-                        <p>Here we will build registration form later.</p>
-                    </body>
-                </html>";
-
-            return Results.Content(html, "text/html");
-        })
-        .WithName("InvitationRegistrationPage")
-        .WithTags("Invitation")
-        .AllowAnonymous();
     }
 }
 

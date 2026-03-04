@@ -3,6 +3,7 @@ using System;
 using Metrix.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Metrix.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260227064648_UpdateAuditFields")]
+    partial class UpdateAuditFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -311,9 +314,9 @@ namespace Metrix.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("Metrix.Domain.Entities.Visitor", "Visitor")
-                        .WithMany("VisitLogs")
+                        .WithMany()
                         .HasForeignKey("VisitorId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("VerifiedBySecurity");
@@ -337,11 +340,6 @@ namespace Metrix.Infrastructure.Migrations
                     b.Navigation("ApprovedByHR");
 
                     b.Navigation("Invitation");
-                });
-
-            modelBuilder.Entity("Metrix.Domain.Entities.Visitor", b =>
-                {
-                    b.Navigation("VisitLogs");
                 });
 #pragma warning restore 612, 618
         }

@@ -24,8 +24,10 @@ public class Visitor
     public string? RegistrationId { get; set; }
 
     public VisitorStatus Status { get; set; } = VisitorStatus.Pending;
-
+    public DateTime SubmittedAt { get; set; } = DateTime.UtcNow;
     public int? ApprovedByHRId { get; set; }
-
+    public HRUser? ApprovedByHR { get; set; }
     public DateTime? ApprovedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public ICollection<VisitLog> VisitLogs { get; set; } = new List<VisitLog>();
 }

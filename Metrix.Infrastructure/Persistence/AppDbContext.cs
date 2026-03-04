@@ -9,6 +9,7 @@ public class AppDbContext : DbContext
         : base(options)
     {
     }
+
     public DbSet<User> AdminUsers => Set<User>();
     public DbSet<HRUser> HRUsers => Set<HRUser>();
     public DbSet<SecurityUser> SecurityUsers => Set<SecurityUser>();
@@ -19,12 +20,12 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        // ================= ADMIN USER =================
         modelBuilder.Entity<User>(entity =>
         {
             entity.HasKey(x => x.Id);
-
-            entity.HasIndex(x => x.Email)
-                  .IsUnique();
+            entity.HasIndex(x => x.Email).IsUnique();
 
             entity.Property(x => x.Name)
                   .IsRequired()
@@ -36,15 +37,16 @@ public class AppDbContext : DbContext
 
             entity.Property(x => x.PasswordHash)
                   .IsRequired();
+
+            entity.Property(x => x.CreatedAt).IsRequired();
+            entity.Property(x => x.UpdatedAt).IsRequired(false);
         });
 
         // ================= HR USER =================
         modelBuilder.Entity<HRUser>(entity =>
         {
             entity.HasKey(x => x.Id);
-
-            entity.HasIndex(x => x.Email)
-                  .IsUnique();
+            entity.HasIndex(x => x.Email).IsUnique();
 
             entity.Property(x => x.Name)
                   .IsRequired()
@@ -56,15 +58,16 @@ public class AppDbContext : DbContext
 
             entity.Property(x => x.PasswordHash)
                   .IsRequired();
+
+            entity.Property(x => x.CreatedAt).IsRequired();
+            entity.Property(x => x.UpdatedAt).IsRequired(false);
         });
 
         // ================= SECURITY USER =================
         modelBuilder.Entity<SecurityUser>(entity =>
         {
             entity.HasKey(x => x.Id);
-
-            entity.HasIndex(x => x.Email)
-                  .IsUnique();
+            entity.HasIndex(x => x.Email).IsUnique();
 
             entity.Property(x => x.Name)
                   .IsRequired()
@@ -76,15 +79,16 @@ public class AppDbContext : DbContext
 
             entity.Property(x => x.PasswordHash)
                   .IsRequired();
+
+            entity.Property(x => x.CreatedAt).IsRequired();
+            entity.Property(x => x.UpdatedAt).IsRequired(false);
         });
 
         // ================= INVITATION =================
         modelBuilder.Entity<Invitation>(entity =>
         {
             entity.HasKey(x => x.Id);
-
-            entity.HasIndex(x => x.Token)
-                  .IsUnique();
+            entity.HasIndex(x => x.Token).IsUnique();
 
             entity.Property(x => x.VisitorName)
                   .IsRequired()
@@ -104,6 +108,9 @@ public class AppDbContext : DbContext
                   .HasConversion<string>()
                   .IsRequired();
 
+            entity.Property(x => x.CreatedAt).IsRequired();
+            entity.Property(x => x.UpdatedAt).IsRequired(false);
+
             entity.HasOne(x => x.CreatedByHR)
                   .WithMany()
                   .HasForeignKey(x => x.CreatedByHRId)
@@ -120,24 +127,45 @@ public class AppDbContext : DbContext
                   .HasMaxLength(150);
 
             entity.Property(x => x.Phone)
-                  .HasMaxLength(10);
+                  .IsRequired()
+                  .HasMaxLength(15);
 
             entity.Property(x => x.Email)
+                  .IsRequired()
                   .HasMaxLength(150);
 
             entity.Property(x => x.IDProofType)
-                  .HasConversion<string>();
+                  .HasConversion<string>()
+                  .IsRequired();
 
             entity.Property(x => x.IDProofNumber)
+                  .IsRequired()
                   .HasMaxLength(100);
 
-            entity.Property(x => x.Status)
-                  .HasConversion<string>();
+            entity.Property(x => x.PhotoPath)
+                  .HasMaxLength(300);
 
+            entity.Property(x => x.RegistrationId)
+                  .HasMaxLength(50);
+
+            entity.Property(x => x.Status)
+                  .HasConversion<string>()
+                  .IsRequired();
+
+            entity.Property(x => x.SubmittedAt).IsRequired();
+            entity.Property(x => x.UpdatedAt).IsRequired(false);
+
+            // 1-1 Invitation
             entity.HasOne(x => x.Invitation)
                   .WithOne()
                   .HasForeignKey<Visitor>(x => x.InvitationId)
                   .OnDelete(DeleteBehavior.Cascade);
+
+            // Approved By HR
+            entity.HasOne(x => x.ApprovedByHR)
+                  .WithMany()
+                  .HasForeignKey(x => x.ApprovedByHRId)
+                  .OnDelete(DeleteBehavior.Restrict);
         });
 
         // ================= VISIT LOG =================
@@ -145,15 +173,35 @@ public class AppDbContext : DbContext
         {
             entity.HasKey(x => x.Id);
 
-            entity.Property(x => x.EntryTime)
-                  .IsRequired();
-
+            entity.Property(x => x.EntryTime).IsRequired();
             entity.Property(x => x.ExitTime);
 
             entity.HasOne(x => x.Visitor)
-                  .WithMany()
+                  .WithMany(v => v.VisitLogs)
                   .HasForeignKey(x => x.VisitorId)
-                  .OnDelete(DeleteBehavior.Cascade);
+                  .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(x => x.VerifiedBySecurity)
+                  .WithMany()
+                  .HasForeignKey(x => x.VerifiedBySecurityId)
+                  .OnDelete(DeleteBehavior.Restrict);
         });
+    }
+
+    // 🔥 AUTO UPDATE UpdatedAt
+    public override Task<int> SaveChangesAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var entries = ChangeTracker.Entries()
+            .Where(e =>
+                e.State == EntityState.Modified &&
+                e.Properties.Any(p => p.Metadata.Name == "UpdatedAt"));
+
+        foreach (var entry in entries)
+        {
+            entry.Property("UpdatedAt").CurrentValue = DateTime.UtcNow;
+        }
+
+        return base.SaveChangesAsync(cancellationToken);
     }
 }

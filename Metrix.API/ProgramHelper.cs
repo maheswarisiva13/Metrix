@@ -32,6 +32,11 @@ public static class ProgramHelper
         {
             options.AddPolicy("AdminOnly", policy =>
                 policy.RequireRole("Admin"));
+            // NEW HR policy
+            options.AddPolicy("HRPolicy", policy =>
+                policy.RequireRole("HR")); // or whatever claim/role your HR users have
+            options.AddPolicy("SecurityPolicy", policy =>
+                policy.RequireRole("Security"));
         });
 
         // ================= EMAIL SETTINGS =================
@@ -43,15 +48,21 @@ public static class ProgramHelper
         services.AddScoped<ISecurityUserRepository, SecurityUserRepository>();
         services.AddScoped<IInvitationRepository, InvitationRepository>();
         services.AddScoped<IAdminRepository, AdminRepository>();
-
+        services.AddScoped<IHRDashboardRepository, HRDashboardRepository>();
+        services.AddScoped<ISecurityDashboardRepository, SecurityDashboardRepository>();
         // ================= SERVICES =================
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IJwtGenerator, JwtGenerator>();
         services.AddScoped<IHrService, HrService>();
         services.AddScoped<ISecurityService, SecurityService>();
         services.AddScoped<IInvitationService, InvitationService>();
+        services.AddScoped<IVisitorService, VisitorService>();
         services.AddScoped<IEmailService, SmtpEmailService>();
         services.AddScoped<IAdminService, AdminService>();
+        services.AddScoped<IHRDashboardService, HRDashboardService>();
+        services.AddScoped<ISecurityDashboardService, SecurityDashboardService>();
+        // ================= HTTP CONTEXT =================
+        services.AddHttpContextAccessor();   // <-- ADD THIS LINE
 
         // ================= HANDLERS =================
         services.AddScoped<RegisterHrHandler>();
@@ -86,7 +97,7 @@ public static class ProgramHelper
         services.AddCors(options =>
         {
             options.AddPolicy("AllowFrontend",
-                policy => policy.WithOrigins("http://localhost:5174")
+                policy => policy.WithOrigins("http://localhost:5173")
                                 .AllowAnyMethod()
                                 .AllowAnyHeader());
         });
@@ -118,6 +129,9 @@ public static class ProgramHelper
         app.MapSecurityManagementEndpoints();
         app.MapInvitationEndpoints();
         app.MapAdminEndpoint();
+        app.MapHRDashboardEndpoints();
+        app.MapVisitorEndpoints();
+        app.MapSecurityDashboardEndpoints();
 
         return app;
     }

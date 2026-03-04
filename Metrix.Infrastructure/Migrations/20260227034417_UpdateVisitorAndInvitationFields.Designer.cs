@@ -3,6 +3,7 @@ using System;
 using Metrix.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Metrix.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260227034417_UpdateVisitorAndInvitationFields")]
+    partial class UpdateVisitorAndInvitationFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,9 +33,6 @@ namespace Metrix.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -46,9 +46,6 @@ namespace Metrix.Infrastructure.Migrations
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -66,9 +63,6 @@ namespace Metrix.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<int>("CreatedByHRId")
                         .HasColumnType("integer");
 
@@ -77,6 +71,9 @@ namespace Metrix.Infrastructure.Migrations
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)");
 
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("text");
@@ -84,9 +81,6 @@ namespace Metrix.Infrastructure.Migrations
                     b.Property<string>("Token")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("VisitDate")
                         .HasColumnType("timestamp with time zone");
@@ -138,9 +132,6 @@ namespace Metrix.Infrastructure.Migrations
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -209,12 +200,17 @@ namespace Metrix.Infrastructure.Migrations
                     b.Property<int>("VerifiedBySecurityId")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("VerifiedBySecurityId1")
+                        .HasColumnType("integer");
+
                     b.Property<int>("VisitorId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("VerifiedBySecurityId");
+
+                    b.HasIndex("VerifiedBySecurityId1");
 
                     b.HasIndex("VisitorId");
 
@@ -278,9 +274,6 @@ namespace Metrix.Infrastructure.Migrations
                     b.Property<DateTime>("SubmittedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ApprovedByHRId");
@@ -304,16 +297,20 @@ namespace Metrix.Infrastructure.Migrations
 
             modelBuilder.Entity("Metrix.Domain.Entities.VisitLog", b =>
                 {
-                    b.HasOne("Metrix.Domain.Entities.SecurityUser", "VerifiedBySecurity")
+                    b.HasOne("Metrix.Domain.Entities.SecurityUser", null)
                         .WithMany()
                         .HasForeignKey("VerifiedBySecurityId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Metrix.Domain.Entities.SecurityUser", "VerifiedBySecurity")
+                        .WithMany()
+                        .HasForeignKey("VerifiedBySecurityId1");
+
                     b.HasOne("Metrix.Domain.Entities.Visitor", "Visitor")
-                        .WithMany("VisitLogs")
+                        .WithMany()
                         .HasForeignKey("VisitorId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("VerifiedBySecurity");
@@ -337,11 +334,6 @@ namespace Metrix.Infrastructure.Migrations
                     b.Navigation("ApprovedByHR");
 
                     b.Navigation("Invitation");
-                });
-
-            modelBuilder.Entity("Metrix.Domain.Entities.Visitor", b =>
-                {
-                    b.Navigation("VisitLogs");
                 });
 #pragma warning restore 612, 618
         }

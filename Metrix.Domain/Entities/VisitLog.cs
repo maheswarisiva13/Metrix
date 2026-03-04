@@ -12,4 +12,6 @@ public class VisitLog
     public DateTime? ExitTime { get; set; }
 
     public int VerifiedBySecurityId { get; set; }
+
+    public SecurityUser? VerifiedBySecurity { get; set; }
 }

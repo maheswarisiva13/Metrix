@@ -17,8 +17,10 @@ public class Invitation
     public string Token { get; set; } = string.Empty;
 
     public InvitationStatus Status { get; set; } = InvitationStatus.Pending;
-
+   
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public int CreatedByHRId { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 
     public HRUser? CreatedByHR { get; set; }
 }

@@ -11,6 +11,8 @@ namespace Metrix.Application.Interfaces.Services
             string visitorEmail,
             string purpose,
             DateTime visitDate,
-            int createdByHrId);
+            int createdByHrId
+            );
     }
 }
+

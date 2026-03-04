@@ -23,7 +23,8 @@ public class InvitationService : IInvitationService
         string visitorEmail,
         string purpose,
         DateTime visitDate,
-        int createdByHrId)
+        int createdByHrId
+        )
     {
         var token = Guid.NewGuid().ToString();
 
@@ -33,7 +34,7 @@ public class InvitationService : IInvitationService
             VisitorName = visitorName,
             VisitorEmail = visitorEmail,
             Purpose = purpose,
-            VisitDate = visitDate,
+            VisitDate = visitDate.ToUniversalTime(),
             Token = token,
             Status = InvitationStatus.Pending,
             CreatedByHRId = createdByHrId
@@ -43,7 +44,7 @@ public class InvitationService : IInvitationService
         await _repository.SaveChangesAsync();
 
         var registrationLink =
-     $"https://localhost:7275/api/invitations/register?token={token}";
+  $"http://localhost:5173/register?token={token}";
 
 
         var body = $@"
@@ -54,8 +55,10 @@ public class InvitationService : IInvitationService
         ";
 
         await _emailService.SendAsync(
-            visitorEmail,
-            "Complete Your Registration",
-            body);
+    visitorEmail,
+    visitorName,       // display name in email
+    "Complete Your Registration",
+    body
+);
     }
 }

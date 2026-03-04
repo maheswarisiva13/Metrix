@@ -9,5 +9,7 @@ namespace Metrix.Application.Interfaces.Repositories
     {
         Task AddAsync(Invitation invitation);
         Task SaveChangesAsync();
+
+        
     }
 }
