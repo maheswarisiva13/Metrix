@@ -15,5 +15,6 @@ namespace Metrix.Application.Interfaces.Services
         Task<List<VisitLogDto>> GetTodayLogsAsync();
         Task<CheckInOutDto> CheckInAsync(int visitorId, int securityId);
         Task<CheckInOutDto> CheckOutAsync(int visitorId, int securityId);
+        Task<List<SecurityVisitorDto>> GetVisitorHistoryAsync();
     }
 }

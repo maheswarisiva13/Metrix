@@ -16,7 +16,7 @@ public static class AdminEndpoint
             .WithTags("Setup")
             .AllowAnonymous();
 
-        app.MapPost(ApiRoutes.Admin.CreateSecurity,
+       app.MapPost(ApiRoutes.Admin.CreateSecurity,
             async (RegisterSecurityHandler handler,
                    RegisterSecurityRequestDto request)
                 => await handler.RegisterSecurity(request))

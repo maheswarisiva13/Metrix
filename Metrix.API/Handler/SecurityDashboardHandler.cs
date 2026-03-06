@@ -78,6 +78,13 @@ namespace Metrix.API.Handler
             var result = await service.CheckOutAsync(id, secId);
             return Results.Ok(result);
         }
+        // GET /api/security/visitors/history
+        public static async Task<IResult> GetVisitorHistoryAsync(
+            ISecurityDashboardService service)
+        {
+            var visitors = await service.GetVisitorHistoryAsync();
+            return Results.Ok(visitors);
+        }
 
         // ── helper ────────────────────────────────────────────────────────────────
 

@@ -27,10 +27,12 @@ public static class ProgramHelper
             options.UseNpgsql(
                 configuration.GetConnectionString("DefaultConnection")));
 
+
+
         // ================= AUTHORIZATION (FIXED) =================
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("AdminOnly", policy =>
+            options.AddPolicy("AdminPolicy", policy =>
                 policy.RequireRole("Admin"));
             // NEW HR policy
             options.AddPolicy("HRPolicy", policy =>
@@ -49,6 +51,7 @@ public static class ProgramHelper
         services.AddScoped<IInvitationRepository, InvitationRepository>();
         services.AddScoped<IAdminRepository, AdminRepository>();
         services.AddScoped<IHRDashboardRepository, HRDashboardRepository>();
+        services.AddScoped<IAdminDashboardRepository, AdminDashboardRepository>();
         services.AddScoped<ISecurityDashboardRepository, SecurityDashboardRepository>();
         // ================= SERVICES =================
         services.AddScoped<IAuthService, AuthService>();
@@ -59,6 +62,7 @@ public static class ProgramHelper
         services.AddScoped<IVisitorService, VisitorService>();
         services.AddScoped<IEmailService, SmtpEmailService>();
         services.AddScoped<IAdminService, AdminService>();
+        services.AddScoped<IAdminDashboardService, AdminDashboardService>();
         services.AddScoped<IHRDashboardService, HRDashboardService>();
         services.AddScoped<ISecurityDashboardService, SecurityDashboardService>();
         // ================= HTTP CONTEXT =================
@@ -132,6 +136,7 @@ public static class ProgramHelper
         app.MapHRDashboardEndpoints();
         app.MapVisitorEndpoints();
         app.MapSecurityDashboardEndpoints();
+        app.MapAdminDashboardEndpoints();
 
         return app;
     }

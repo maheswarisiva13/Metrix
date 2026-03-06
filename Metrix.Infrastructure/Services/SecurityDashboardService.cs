@@ -147,6 +147,11 @@ public class SecurityDashboardService : ISecurityDashboardService
             Time = openLog.ExitTime.Value,
         };
     }
+    public async Task<List<SecurityVisitorDto>> GetVisitorHistoryAsync()
+    {
+        var visitors = await _repo.GetVisitorHistoryAsync();
+        return visitors.Select(ToDto).ToList();
+    }
 
     // ── Mapper ────────────────────────────────────────────────────────────────
 
@@ -177,4 +182,5 @@ public class SecurityDashboardService : ISecurityDashboardService
             CheckedOutAt = checkOut?.ExitTime,
         };
     }
+
 }

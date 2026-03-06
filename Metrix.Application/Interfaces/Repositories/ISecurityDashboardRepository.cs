@@ -29,5 +29,8 @@ namespace Metrix.Application.Interfaces.Repositories
         Task<int> CountCheckedInAsync();
         Task<int> CountCheckedInTodayAsync();
         Task<int> CountCheckedOutTodayAsync();
+
+        Task<List<Visitor>> GetVisitorHistoryAsync();
+
     }
 }

@@ -21,7 +21,7 @@ public static class HRDashboardEndpoints
           .WithName("GetRecentVisitors");
 
         hr.MapGet("/visitors", HRDashboardHandlers.GetAllVisitorsAsync)
-          .WithName("GetAllVisitors");
+          .WithName("HRGetAllVisitors");
 
         hr.MapPost("/visitors/{id:int}/approve", HRDashboardHandlers.ApproveVisitorAsync)
           .WithName("ApproveVisitor");

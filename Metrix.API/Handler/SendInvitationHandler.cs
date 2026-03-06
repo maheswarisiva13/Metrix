@@ -1,4 +1,5 @@
-﻿using Metrix.Application.DTOs;
+﻿using Metrix.Application.Common;
+using Metrix.Application.DTOs;
 using Metrix.Application.DTOs.Invitation;
 using Metrix.Application.Interfaces.Services;
 using System.Security.Claims;
@@ -35,7 +36,7 @@ public class SendInvitationHandler
 
         var hrId = int.Parse(hrIdClaim.Value);
 
-        await _service.SendInvitationAsync(
+        var result = await _service.SendInvitationAsync(
             request.VisitorName,
             request.VisitorEmail,
             request.Purpose,
@@ -43,6 +44,7 @@ public class SendInvitationHandler
             hrId
         );
 
-        return Results.Ok(new { message = "Invitation sent successfully" });
+        //return Results.Ok(new { message = "Invitation sent successfully" });
+        return Results.Ok(result);
     }
 }

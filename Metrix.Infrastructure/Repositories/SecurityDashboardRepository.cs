@@ -172,4 +172,16 @@ public class SecurityDashboardRepository : ISecurityDashboardRepository
                 l.ExitTime.Value >= utcStart &&
                 l.ExitTime.Value < utcEnd);
     }
+    public async Task<List<Visitor>> GetVisitorHistoryAsync()
+    {
+        return await _db.Visitors
+            .AsNoTracking()
+            .Include(v => v.Invitation)
+                .ThenInclude(i => i.CreatedByHR)
+            .Include(v => v.ApprovedByHR)
+            .Include(v => v.VisitLogs)
+            .OrderByDescending(v => v.SubmittedAt)
+            .ToListAsync();
+    }
+
 }

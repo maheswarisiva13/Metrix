@@ -1,4 +1,5 @@
-﻿using Metrix.Application.Interfaces.Repositories;
+﻿using Metrix.Application.DTOs.Invitation;
+using Metrix.Application.Interfaces.Repositories;
 using Metrix.Application.Interfaces.Services;
 using Metrix.Domain.Entities;
 using Metrix.Domain.Enums;
@@ -18,19 +19,22 @@ public class InvitationService : IInvitationService
         _emailService = emailService;
     }
 
-    public async Task SendInvitationAsync(
+    /// <summary>
+    /// Sends an invitation to a visitor and returns the registration link.
+    /// </summary>
+    public async Task<InvitationResponseDto> SendInvitationAsync(
         string visitorName,
         string visitorEmail,
         string purpose,
         DateTime visitDate,
-        int createdByHrId
-        )
+        int createdByHrId)
     {
+        // Generate a unique token for registration
         var token = Guid.NewGuid().ToString();
 
+        // Create invitation entity
         var invitation = new Invitation
         {
-          
             VisitorName = visitorName,
             VisitorEmail = visitorEmail,
             Purpose = purpose,
@@ -40,25 +44,32 @@ public class InvitationService : IInvitationService
             CreatedByHRId = createdByHrId
         };
 
+        // Save to database
         await _repository.AddAsync(invitation);
         await _repository.SaveChangesAsync();
 
-        var registrationLink =
-  $"http://localhost:5173/register?token={token}";
+        // Build registration link
+        var registrationLink = $"http://localhost:5173/register?token={token}";
 
-
-        var body = $@"
+        // Send email to visitor
+        var emailBody = $@"
             <h2>Invitation</h2>
             <p>Hello {visitorName},</p>
-            <p>Please click below to complete registration:</p>
+            <p>Please click the link below to complete your registration:</p>
             <a href='{registrationLink}'>Complete Registration</a>
         ";
 
         await _emailService.SendAsync(
-    visitorEmail,
-    visitorName,       // display name in email
-    "Complete Your Registration",
-    body
-);
+            visitorEmail,
+            visitorName,               // display name in email
+            "Complete Your Registration",
+            emailBody
+        );
+
+        // Return response to frontend
+        return new InvitationResponseDto
+        {
+            InviteLink = registrationLink
+        };
     }
 }

@@ -35,6 +35,12 @@ namespace Metrix.API.Endpoints
 
             sec.MapPost("/visitor/{id:int}/check-out", SecurityDashboardHandler.CheckOutAsync)
                .WithName("CheckOutVisitor");
+
+            // GET /api/security/visitors/history
+            sec.MapGet("/visitors/history", SecurityDashboardHandler.GetVisitorHistoryAsync)
+               .WithName("GetVisitorHistory");
+
+
         }
     }
 }
