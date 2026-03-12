@@ -1,5 +1,4 @@
-﻿
-using Metrix.Application.DTOs.Admin;
+﻿using Metrix.Application.DTOs.Admin;
 using Metrix.Application.Interfaces.Services;
 
 namespace Metrix.API.Handlers;
@@ -22,22 +21,25 @@ public static class AdminDashboardHandler
 
     // POST /api/admin/security-users
     public static async Task<IResult> CreateSecurityUserAsync(
-        CreateSecurityUserRequest
-         request,
+        CreateSecurityUserRequest request,
         IAdminDashboardService service)
     {
         if (string.IsNullOrWhiteSpace(request.Name) ||
             string.IsNullOrWhiteSpace(request.Email) ||
             string.IsNullOrWhiteSpace(request.Password))
         {
-            return Results.BadRequest(new
-            {
-                message = "Name, Email and Password are required."
-            });
+            return Results.BadRequest(new { message = "Name, Email and Password are required." });
         }
 
-        var createdUser = await service.CreateSecurityUserAsync(request);
-        return Results.Ok(createdUser);
+        try
+        {
+            var createdUser = await service.CreateSecurityUserAsync(request);
+            return Results.Ok(createdUser);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Results.BadRequest(new { message = ex.Message });
+        }
     }
 
     // POST /api/admin/security-users/{id}/deactivate
@@ -46,11 +48,7 @@ public static class AdminDashboardHandler
         IAdminDashboardService service)
     {
         await service.DeactivateSecurityUserAsync(id);
-
-        return Results.Ok(new
-        {
-            message = "Security user deactivated successfully."
-        });
+        return Results.Ok(new { message = "Security user deactivated successfully." });
     }
 
     // GET /api/admin/visitors
